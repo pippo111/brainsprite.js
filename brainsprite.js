@@ -114,8 +114,6 @@ function brainsprite(params) {
       brain.overlay.contextZ = brain.overlay.canvasZ.getContext('2d');
       // opacity
       brain.overlay.opacity = typeof params.overlay.opacity !== 'undefined' ? params.overlay.opacity : 1;
-  } else {
-      brain.overlay = false;
   };
   
   //**************//  
@@ -351,8 +349,10 @@ function brainsprite(params) {
 
   // In case of click, update brain slices
   brain.clickBrain = function(e){
-    var xx = e.pageX - brain.canvas.offsetLeft;
-    var yy = e.pageY - brain.canvas.offsetTop;
+    var rect = brain.canvas.getBoundingClientRect();
+    var xx = e.clientX - rect.left;
+    var yy = e.clientY - rect.top;
+    
     if (xx<brain.widthCanvas.X){
       var sy = Math.round(brain.nbSlice.Y*(xx/brain.widthCanvas.X));
       var sz = Math.round(brain.nbSlice.Z*(yy-((brain.heightCanvas.max-brain.heightCanvas.X)/2))/brain.heightCanvas.X);
