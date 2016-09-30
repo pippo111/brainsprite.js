@@ -142,8 +142,6 @@ function brainsprite(params) {
       brain.colorMap.context.drawImage(brain.colorMap.img, 
                 0,0,brain.colorMap.img.width, brain.colorMap.img.height, 
                 0,0,brain.colorMap.img.width, brain.colorMap.img.height);            
-  } else {
-      brain.colorMap.hide = true;
   };
   
   //********************************************//
@@ -211,9 +209,12 @@ function brainsprite(params) {
     brain.coordinatesSlice.Z = ((brain.nbSlice.Z-brain.numSlice.Z-1) * brain.voxelSize) - brain.origin.Z;
           
     // Update voxel value
-    var rgb = brain.overlay.contextX.getImageData(brain.numSlice.Y,brain.numSlice.Z,1,1).data;
-    brain.voxelValue = brain.getValue(rgb,brain.colorMap);
-    
+    if (brain.overlay) {
+      var rgb = brain.overlay.contextX.getImageData(brain.numSlice.Y,brain.numSlice.Z,1,1).data;
+      brain.voxelValue = brain.getValue(rgb,brain.colorMap);
+    } else {
+      brain.voxelValue = NaN;
+    };
     // Now draw the slice
     switch(type) {
       case 'X':
@@ -281,7 +282,7 @@ function brainsprite(params) {
         }
         
         // Add colorbar
-        if (!brain.colorMap.hide) {
+        if ((brain.colorMap)&&(!brain.colorMap.hide)) {
           // draw the colorMap on the coronal slice at screen resolution
           brain.context.drawImage(brain.colorMap.img,
                 0, 0, brain.colorMap.img.width, 1, Math.round(brain.widthCanvas.X + brain.widthCanvas.Y*0.2) , Math.round(brain.heightCanvas.max * brain.heightColorBar / 2), Math.round(brain.widthCanvas.Y*0.6) , Math.round(brain.heightCanvas.max * brain.heightColorBar));
