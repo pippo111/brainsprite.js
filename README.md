@@ -57,7 +57,7 @@ The option `flagCoordinates` will turn on a display of each slice number at the 
   ```
 You can check the full code of the demo [here](https://raw.githubusercontent.com/SIMEXP/brainsprite.js/master/examples/example_slice_numbers.html) and check a [live demo >](http://simexp.github.io/brainsprite.js/examples/example_slice_numbers.html).
 
->[<img src="https://github.com/SIMEXP/brainsprite.js/raw/master/examples/example_slice_numbers.png" width="300px" />](http://simexp.github.io/brainsprite.js/examples/example_slice_numbers.html)
+>[<img src="https://github.com/SIMEXP/brainsprite.js/raw/gh-pages/examples/example_slice_numbers.png" width="300px" />](http://simexp.github.io/brainsprite.js/examples/example_slice_numbers.html)
 
 It is also possible to specify a voxel size (isotropic, i.e. the same dimension in the X, Y and Z axis), as well as an origin, i.e. which voxel has coordinates 0, 0, 0. Note that no rotations/shears are supported, as the volume is assumed to be resampled in MNI space. 
 ```html
