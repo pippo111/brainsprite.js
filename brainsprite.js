@@ -624,6 +624,21 @@ var brainsprite = function (params) {
     brain.canvas.removeEventListener('mousemove', brain.clickBrain, false)
   }, false)
 
+  // Attach a listener on touch start
+  brain.canvas.addEventListener('touchstart', function () {
+    brain.canvas.addEventListener('touchmove', brain.clickBrain, false)
+  }, false)
+
+  // Attach a listener on touch end
+  brain.canvas.addEventListener('touchend', function () {
+    brain.canvas.removeEventListener('touchmove', brain.clickBrain, false)
+  }, false)
+
+  // Attach a listener on touch cancel
+  brain.canvas.addEventListener('touchcancel', function () {
+    brain.canvas.removeEventListener('touchmove', brain.clickBrain, false)
+  }, false)
+
   // Add scroll listener
   brain.canvas.addEventListener('wheel', function (e) {
     e.preventDefault()
