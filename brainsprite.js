@@ -582,6 +582,29 @@ var brainsprite = function (params) {
     };
   }
 
+  // In case of wheel, update brain hovered slice
+  brain.scrollBrain = function (e) {
+    let rect = brain.canvas.getBoundingClientRect()
+
+    let xx = e.clientX - rect.left
+
+    if (xx < brain.widthCanvas.X) {
+      brain.numSlice.X = Math.max(Math.min(brain.numSlice.X + Math.sign(e.deltaY), brain.nbSlice.X - 1), 0)
+    } else if (xx < (brain.widthCanvas.X + brain.widthCanvas.Y)) {
+      brain.numSlice.Y = Math.max(Math.min(brain.numSlice.Y + Math.sign(e.deltaY), brain.nbSlice.Y - 1), 0)
+    } else {
+      brain.numSlice.Z = Math.max(Math.min(brain.numSlice.Z + Math.sign(e.deltaY), brain.nbSlice.Z - 1), 0)
+    };
+    // Update value
+    updateValue()
+
+    // Update coordinates
+    updateCoordinates()
+
+    // Redraw slices
+    brain.drawAll()
+  }
+
   brain.drawAll = function () {
     brain.draw(brain.numSlice.X, 'X')
     brain.draw(brain.numSlice.Y, 'Y')
@@ -599,6 +622,12 @@ var brainsprite = function (params) {
   // Detach the listener on mouse up
   brain.canvas.addEventListener('mouseup', function () {
     brain.canvas.removeEventListener('mousemove', brain.clickBrain, false)
+  }, false)
+
+  // Add scroll listener
+  brain.canvas.addEventListener('wheel', function (e) {
+    e.preventDefault()
+    brain.scrollBrain(e)
   }, false)
 
   // Draw all slices when background/overlay are loaded
