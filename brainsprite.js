@@ -621,3 +621,5 @@ var brainsprite = function (params) {
 
   return brain
 }
+
+export default brainsprite
