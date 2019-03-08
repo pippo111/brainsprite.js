@@ -2,6 +2,7 @@ function initBrain (params) {
   // Parameter initialization - for internal use
 
   var defaultParams = {
+    projection: false,
     smooth: false,
     flagValue: false,
     colorBackground: '#000000',
@@ -139,6 +140,8 @@ var brainsprite = function (params) {
   //
   // Parameters
   // ----------
+  //  projection : (string or false) if false display all projections
+  //    if string display only one projection
   //  nanValue : (boolean) unable to read values.
   //  smooth : (boolean) turn on/off smoothing of the main slices.
   //  flagValue : (boolean) turn on/off display of the current value.
@@ -541,6 +544,101 @@ var brainsprite = function (params) {
     }
   }
 
+  //* **************************************//
+  // Draw a particular slice in the canvas //
+  //* **************************************//
+  brain.drawOnly = function (type) {
+    // Init variables
+    let coord
+    let coordWidth
+    let xx
+    let pos = {}
+    let nY = brain.nbSlice.Y
+    let nZ = brain.nbSlice.Z
+
+    brain.context.font = brain.sizeFontPixels + 'px "Didact Gothic"'
+    brain.context.fillStyle = brain.colorBackground
+
+    switch (type) {
+      case 'X':
+        // Draw a sagital slice in memory
+        pos.XW = ((brain.numSlice.X) % brain.nbCol)
+        pos.XH = (brain.numSlice.X - pos.XW) / brain.nbCol
+        brain.planes.contextX.drawImage(brain.planes.canvasMaster,
+          pos.XW * nY, pos.XH * nZ, nY, nZ,
+          0, 0, nY, nZ)
+
+        // fill the slice with background color
+        brain.context.fillRect(0, 0, brain.widthCanvas.X, brain.canvas.height)
+
+        // Draw on the main canvas
+        brain.context.drawImage(brain.planes.canvasX,
+          0, 0, nY, nZ,
+          0, (brain.heightCanvas.max - brain.heightCanvas.X) / 2,
+          brain.widthCanvas.X, brain.heightCanvas.X)
+
+        break
+
+      case 'Y':
+        // Draw a single coronal slice at native resolution
+        brain.context.fillRect(0, 0, brain.widthCanvas.max, brain.canvas.height)
+        for (xx = 0; xx < brain.nbSlice.X; xx++) {
+          let posW = (xx % brain.nbCol)
+          let posH = (xx - posW) / brain.nbCol
+          brain.planes.contextY.drawImage(brain.planes.canvasMaster,
+            posW * brain.nbSlice.Y + brain.numSlice.Y, posH * brain.nbSlice.Z,
+            1, brain.nbSlice.Z, xx, 0, 1, brain.nbSlice.Z)
+        }
+
+        // Redraw the coronal slice in the canvas at screen resolution
+        brain.context.drawImage(brain.planes.canvasY,
+          0, 0, brain.nbSlice.X, brain.nbSlice.Z,
+          ((brain.widthCanvas.max - brain.widthCanvas.Y) / 2), (brain.heightCanvas.max - brain.heightCanvas.Y) / 2,
+          brain.widthCanvas.Y, brain.heightCanvas.Y)
+
+        break
+
+      case 'Z':
+        // Draw a single axial slice at native resolution
+        brain.context.fillRect(0, 0, brain.widthCanvas.max, brain.canvas.height)
+        for (xx = 0; xx < brain.nbSlice.X; xx++) {
+          let posW = (xx % brain.nbCol)
+          let posH = (xx - posW) / brain.nbCol
+          brain.planes.contextZ.drawImage(brain.planes.canvasMaster,
+            posW * brain.nbSlice.Y, posH * brain.nbSlice.Z + brain.nbSlice.Z -
+            brain.numSlice.Z - 1, brain.nbSlice.Y, 1, 0, xx, brain.nbSlice.Y, 1)
+        }
+
+        // Redraw the axial slice in the canvas at screen resolution
+        brain.context.drawImage(brain.planes.canvasZ,
+          0, 0, brain.nbSlice.X, brain.nbSlice.Y,
+          (brain.widthCanvas.max - brain.widthCanvas.Z) / 2,
+          (brain.heightCanvas.max - brain.heightCanvas.Z) / 2,
+          brain.widthCanvas.Z, brain.heightCanvas.Z)
+
+        break
+    }
+
+    // Draw the title
+    if (brain.title) {
+      brain.context.fillStyle = brain.colorFont
+      coordWidth = brain.context.measureText(brain.title).width
+      brain.context.fillText(brain.title,
+        (brain.widthCanvas.max / 2) - coordWidth / 2,
+        Math.round((brain.heightCanvas.max * brain.heightColorBar) +
+                      brain.sizeFontPixels / 2))
+    }
+
+    // Add coordinates on the slice
+    if (brain.flagCoordinates) {
+      coord = `${type} = ` + Math.round(brain.coordinatesSlice[type])
+      coordWidth = brain.context.measureText(coord).width
+      brain.context.fillStyle = brain.colorFont
+      brain.context.fillText(coord, (brain.widthCanvas.max / 2) - coordWidth / 2,
+        Math.round(brain.canvas.height - (brain.sizeFontPixels / 2)))
+    }
+  }
+
   // In case of click, update brain slices
   brain.clickBrain = function (e) {
     let rect = brain.canvas.getBoundingClientRect()
@@ -576,7 +674,7 @@ var brainsprite = function (params) {
     updateCoordinates()
 
     // Redraw slices
-    brain.drawAll()
+    brain.renderProjections()
     if (brain.onclick) {
       brain.onclick(e)
     };
@@ -602,13 +700,47 @@ var brainsprite = function (params) {
     updateCoordinates()
 
     // Redraw slices
-    brain.drawAll()
+    brain.renderProjections()
+  }
+
+  // In case of wheel, update hovered projection
+  brain.scrollProjection = function (e) {
+    switch (brain.projection) {
+      case 'X':
+        brain.numSlice.X = Math.max(Math.min(brain.numSlice.X + Math.sign(e.deltaY), brain.nbSlice.X - 1), 0)
+        break
+
+      case 'Y':
+        brain.numSlice.Y = Math.max(Math.min(brain.numSlice.Y + Math.sign(e.deltaY), brain.nbSlice.Y - 1), 0)
+        break
+
+      case 'Z':
+        brain.numSlice.Z = Math.max(Math.min(brain.numSlice.Z + Math.sign(e.deltaY), brain.nbSlice.Z - 1), 0)
+        break
+
+      default:
+        break
+    }
+
+    // Update coordinates
+    updateCoordinates()
+
+    // Redraw slices
+    brain.renderProjections()
   }
 
   brain.drawAll = function () {
     brain.draw(brain.numSlice.X, 'X')
     brain.draw(brain.numSlice.Y, 'Y')
     brain.draw(brain.numSlice.Z, 'Z')
+  }
+
+  brain.renderProjections = function () {
+    if (brain.projection) {
+      brain.drawOnly(brain.projection)
+    } else {
+      brain.drawAll()
+    }
   }
 
   // Attach a listener for clicks
@@ -642,18 +774,23 @@ var brainsprite = function (params) {
   // Add scroll listener
   brain.canvas.addEventListener('wheel', function (e) {
     e.preventDefault()
-    brain.scrollBrain(e)
+
+    if (brain.projection) {
+      brain.scrollProjection(e)
+    } else {
+      brain.scrollBrain(e)
+    }
   }, false)
 
   // Draw all slices when background/overlay are loaded
   brain.sprite.addEventListener('load', function () {
     brain.init()
-    brain.drawAll()
+    brain.renderProjections()
   })
   if (brain.overlay) {
     brain.overlay.sprite.addEventListener('load', function () {
       brain.init()
-      brain.drawAll()
+      brain.renderProjections()
     })
   }
 
@@ -661,7 +798,7 @@ var brainsprite = function (params) {
   brain.init()
 
   // Draw all slices
-  brain.drawAll()
+  brain.renderProjections()
 
   return brain
 }
