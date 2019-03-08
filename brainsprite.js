@@ -713,6 +713,43 @@ var brainsprite = function (params) {
     };
   }
 
+  // In case of click, update brain slices
+  brain.clickProjection = function (e) {
+    let rect = brain.canvas.getBoundingClientRect()
+    let yy = e.clientY - rect.top
+
+    switch (brain.projection) {
+      case 'X':
+        let sx = Math.round((brain.nbSlice.X - 1) * (yy / brain.widthCanvas.Y))
+        brain.numSlice.X = Math.max(Math.min(sx, brain.nbSlice.X - 1), 0)
+        break
+
+      case 'Y':
+        let sy = Math.round((brain.nbSlice.Y - 1) * (((brain.heightCanvas.max +
+          brain.heightCanvas.Z) / 2) - yy) / brain.heightCanvas.Z)
+        brain.numSlice.Y = Math.max(Math.min(sy, brain.nbSlice.Y - 1), 0)
+        break
+
+      case 'Z':
+        let sz = Math.round((brain.nbSlice.Z - 1) * (((brain.heightCanvas.max +
+          brain.heightCanvas.X) / 2) - yy) / brain.heightCanvas.X)
+        brain.numSlice.Z = Math.max(Math.min(sz, brain.nbSlice.Z - 1), 0)
+        break
+    }
+
+    // Update value
+    updateValue()
+
+    // Update coordinates
+    updateCoordinates()
+
+    // Redraw slices
+    brain.renderProjections()
+    if (brain.onclick) {
+      brain.onclick(e)
+    };
+  }
+
   // In case of wheel, update brain hovered slice
   brain.scrollBrain = function (e) {
     let rect = brain.canvas.getBoundingClientRect()
@@ -720,11 +757,11 @@ var brainsprite = function (params) {
     let xx = e.clientX - rect.left
 
     if (xx < brain.widthCanvas.X) {
-      brain.numSlice.X = Math.max(Math.min(brain.numSlice.X + Math.sign(e.deltaY), brain.nbSlice.X - 1), 0)
+      brain.numSlice.X = Math.max(Math.min(brain.numSlice.X - Math.sign(e.deltaY), brain.nbSlice.X - 1), 0)
     } else if (xx < (brain.widthCanvas.X + brain.widthCanvas.Y)) {
-      brain.numSlice.Y = Math.max(Math.min(brain.numSlice.Y + Math.sign(e.deltaY), brain.nbSlice.Y - 1), 0)
+      brain.numSlice.Y = Math.max(Math.min(brain.numSlice.Y - Math.sign(e.deltaY), brain.nbSlice.Y - 1), 0)
     } else {
-      brain.numSlice.Z = Math.max(Math.min(brain.numSlice.Z + Math.sign(e.deltaY), brain.nbSlice.Z - 1), 0)
+      brain.numSlice.Z = Math.max(Math.min(brain.numSlice.Z - Math.sign(e.deltaY), brain.nbSlice.Z - 1), 0)
     };
     // Update value
     updateValue()
@@ -740,15 +777,15 @@ var brainsprite = function (params) {
   brain.scrollProjection = function (e) {
     switch (brain.projection) {
       case 'X':
-        brain.numSlice.X = Math.max(Math.min(brain.numSlice.X + Math.sign(e.deltaY), brain.nbSlice.X - 1), 0)
+        brain.numSlice.X = Math.max(Math.min(brain.numSlice.X - Math.sign(e.deltaY), brain.nbSlice.X - 1), 0)
         break
 
       case 'Y':
-        brain.numSlice.Y = Math.max(Math.min(brain.numSlice.Y + Math.sign(e.deltaY), brain.nbSlice.Y - 1), 0)
+        brain.numSlice.Y = Math.max(Math.min(brain.numSlice.Y - Math.sign(e.deltaY), brain.nbSlice.Y - 1), 0)
         break
 
       case 'Z':
-        brain.numSlice.Z = Math.max(Math.min(brain.numSlice.Z + Math.sign(e.deltaY), brain.nbSlice.Z - 1), 0)
+        brain.numSlice.Z = Math.max(Math.min(brain.numSlice.Z - Math.sign(e.deltaY), brain.nbSlice.Z - 1), 0)
         break
 
       default:
@@ -776,43 +813,43 @@ var brainsprite = function (params) {
     }
   }
 
+  // select click handler depending on the view
+  const clickHandler = brain.projection ? brain.clickProjection : brain.clickBrain
+  const scrollHandler = brain.projection ? brain.scrollProjection : brain.scrollBrain
+
   // Attach a listener for clicks
-  brain.canvas.addEventListener('click', brain.clickBrain, false)
+  brain.canvas.addEventListener('click', clickHandler, false)
 
   // Attach a listener on mouse down
   brain.canvas.addEventListener('mousedown', function () {
-    brain.canvas.addEventListener('mousemove', brain.clickBrain, false)
+    brain.canvas.addEventListener('mousemove', clickHandler, false)
   }, false)
 
   // Detach the listener on mouse up
   brain.canvas.addEventListener('mouseup', function () {
-    brain.canvas.removeEventListener('mousemove', brain.clickBrain, false)
+    brain.canvas.removeEventListener('mousemove', clickHandler, false)
   }, false)
 
   // Attach a listener on touch start
   brain.canvas.addEventListener('touchstart', function () {
-    brain.canvas.addEventListener('touchmove', brain.clickBrain, false)
+    brain.canvas.addEventListener('touchmove', clickHandler, false)
   }, false)
 
   // Attach a listener on touch end
   brain.canvas.addEventListener('touchend', function () {
-    brain.canvas.removeEventListener('touchmove', brain.clickBrain, false)
+    brain.canvas.removeEventListener('touchmove', clickHandler, false)
   }, false)
 
   // Attach a listener on touch cancel
   brain.canvas.addEventListener('touchcancel', function () {
-    brain.canvas.removeEventListener('touchmove', brain.clickBrain, false)
+    brain.canvas.removeEventListener('touchmove', clickHandler, false)
   }, false)
 
   // Add scroll listener
   brain.canvas.addEventListener('wheel', function (e) {
     e.preventDefault()
 
-    if (brain.projection) {
-      brain.scrollProjection(e)
-    } else {
-      brain.scrollBrain(e)
-    }
+    scrollHandler(e)
   }, false)
 
   // Draw all slices when background/overlay are loaded
