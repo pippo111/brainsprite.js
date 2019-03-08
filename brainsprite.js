@@ -840,18 +840,23 @@ var brainsprite = function (params) {
     brain.canvas.removeEventListener('mousemove', clickHandler, false)
   }, false)
 
-  // Attach a listener on touch start
-  brain.canvas.addEventListener('touchstart', function () {
-    brain.canvas.addEventListener('touchmove', clickHandler, false)
+  // Attach a listener on touch move
+  brain.canvas.addEventListener('touchmove', e => {
+    e.preventDefault()
+
+    // Mimic clientX and clientY on click / mouse event
+    e.clientX = e.changedTouches[0].clientX
+    e.clientY = e.changedTouches[0].clientY
+
+    clickHandler(e)
   }, false)
 
-  // Attach a listener on touch end
-  brain.canvas.addEventListener('touchend', function () {
+  // Remove unused events on touch end / cancel
+  brain.canvas.addEventListener('touchend', () => {
     brain.canvas.removeEventListener('touchmove', clickHandler, false)
   }, false)
 
-  // Attach a listener on touch cancel
-  brain.canvas.addEventListener('touchcancel', function () {
+  brain.canvas.addEventListener('touchcancel', () => {
     brain.canvas.removeEventListener('touchmove', clickHandler, false)
   }, false)
 
