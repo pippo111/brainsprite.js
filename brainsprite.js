@@ -12,6 +12,7 @@ function initBrain (params) {
     affine: false,
     heightColorBar: 0.04,
     sizeFont: 0.075,
+    fontFamily: 'Arial',
     colorFont: '#FFFFFF',
     nbDecimals: 3,
     crosshair: false,
@@ -147,6 +148,7 @@ var brainsprite = function (params) {
   //  flagValue : (boolean) turn on/off display of the current value.
   //  colorBackground : (str) the color for background.
   //  colorFont : (str) the color for the fonts.
+  //  fontFamily : (str) font family
   //  colorCrosshair : (str) the color of the crosshair.
   //  flagCoordinates : (bool) turn on/off slice coordinates.
   //  origin : ({"X","Y","Z"}) coordinates of the origin.
@@ -321,7 +323,7 @@ var brainsprite = function (params) {
         Math.round(brain.sizeFont * (brain.heightCanvas.max))
 
     // fonts
-    brain.context.font = brain.sizeFontPixels + 'px Arial'
+    brain.context.font = brain.sizeFontPixels + `px "${brain.fontFamily}"`
 
     // Draw the Master canvas
     brain.planes.canvasMaster.width = brain.sprite.width
@@ -494,7 +496,7 @@ var brainsprite = function (params) {
 
         // Add Y coordinates on the slice
         if (brain.flagCoordinates) {
-          brain.context.font = brain.sizeFontPixels + 'px Arial'
+          brain.context.font = brain.sizeFontPixels + `px "${brain.fontFamily}"`
           brain.context.fillStyle = brain.colorFont
           coord = 'y = ' + Math.round(brain.coordinatesSlice.Y)
           coordWidth = brain.context.measureText(coord).width
@@ -556,7 +558,7 @@ var brainsprite = function (params) {
     let nY = brain.nbSlice.Y
     let nZ = brain.nbSlice.Z
 
-    brain.context.font = brain.sizeFontPixels + 'px "Didact Gothic"'
+    brain.context.font = brain.sizeFontPixels + `px "${brain.fontFamily}"`
     brain.context.fillStyle = brain.colorBackground
 
     switch (type) {
