@@ -574,6 +574,10 @@ var brainsprite = function (params) {
           brain.widthCanvas.Y + (brain.widthCanvas.Z / 2) - coordWidth / 2,
           Math.round(brain.canvas.height - (brain.sizeFontPixels / 2)))
         }
+        break
+
+      default:
+        break
     }
   }
 
@@ -649,6 +653,9 @@ var brainsprite = function (params) {
           (brain.heightCanvas.max - brain.heightCanvas.Z) / 2,
           brain.widthCanvas.Z, brain.heightCanvas.Z)
 
+        break
+
+      default:
         break
     }
 
@@ -734,6 +741,9 @@ var brainsprite = function (params) {
         let sz = Math.round((brain.nbSlice.Z - 1) * (((brain.heightCanvas.max +
           brain.heightCanvas.X) / 2) - yy) / brain.heightCanvas.X)
         brain.numSlice.Z = Math.max(Math.min(sz, brain.nbSlice.Z - 1), 0)
+        break
+
+      default:
         break
     }
 
