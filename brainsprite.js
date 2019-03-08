@@ -862,6 +862,11 @@ var brainsprite = function (params) {
     scrollHandler(e)
   }, false)
 
+  window.addEventListener('resize', function () {
+    brain.init()
+    brain.renderProjections()
+  }, false)
+
   // Draw all slices when background/overlay are loaded
   brain.sprite.addEventListener('load', function () {
     brain.init()
