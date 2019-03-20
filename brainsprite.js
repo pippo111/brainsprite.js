@@ -840,6 +840,11 @@ var brainsprite = function (params) {
     brain.canvas.removeEventListener('mousemove', clickHandler, false)
   }, false)
 
+  // Prevent losing mouse up if user move the pointer outside of the canvas
+  document.addEventListener('mouseup', function () {
+    brain.canvas.removeEventListener('mousemove', clickHandler, false)
+  }, false)
+
   // Attach a listener on touch move
   brain.canvas.addEventListener('touchmove', e => {
     e.preventDefault()
