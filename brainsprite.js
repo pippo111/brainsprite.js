@@ -86,7 +86,7 @@ function initCanvas (brain, canvas) {
 function initSprite (brain, sprite, nbSlice) {
   // Initialize the sprite and associated dimensions - for internal use
 
-  brain.sprite = document.getElementById(sprite)
+  brain.sprite = sprite
   brain.nbCol = brain.sprite.width / nbSlice.Y
   brain.nbRow = brain.sprite.height / nbSlice.Z
   brain.nbSlice = {
@@ -108,7 +108,7 @@ function initOverlay (brain, sprite, nbSlice) {
   // Initialize the overlay canvas - for internal use
 
   brain.overlay = {}
-  brain.overlay.sprite = document.getElementById(sprite)
+  brain.overlay.sprite = sprite
   brain.overlay.nbCol = brain.overlay.sprite.width / nbSlice.Y
   brain.overlay.nbRow = brain.overlay.sprite.height / nbSlice.Z
   brain.overlay.nbSlice = {
@@ -219,7 +219,7 @@ var brainsprite = function (params) {
         brain.contextRead.fillStyle = '#FFFFFF'
         brain.contextRead.fillRect(0, 0, 1, 1)
         brain.contextRead.drawImage(
-          brain.overlay.sprite,
+          brain.overlay.sprite.bitmap,
           pos.XW * brain.nbSlice.Y + brain.numSlice.Y,
           pos.XH * brain.nbSlice.Z + brain.nbSlice.Z - brain.numSlice.Z - 1,
           1, 1, 0, 0, 1, 1)
@@ -229,7 +229,7 @@ var brainsprite = function (params) {
         brain.contextRead.fillStyle = '#000000'
         brain.contextRead.fillRect(0, 0, 1, 1)
         brain.contextRead.drawImage(
-          brain.overlay.sprite,
+          brain.overlay.sprite.bitmap,
           pos.XW * brain.nbSlice.Y + brain.numSlice.Y,
           pos.XH * brain.nbSlice.Z + brain.nbSlice.Z - brain.numSlice.Z - 1,
           1, 1, 0, 0, 1, 1)
@@ -301,13 +301,15 @@ var brainsprite = function (params) {
     brain.planes.canvasMaster.width = brain.sprite.width
     brain.planes.canvasMaster.height = brain.sprite.height
     brain.planes.contextMaster.globalAlpha = 1
-    brain.planes.contextMaster.drawImage(brain.sprite,
+
+    brain.planes.contextMaster.drawImage(brain.sprite.bitmap,
       0, 0, brain.sprite.width, brain.sprite.height,
       0, 0, brain.sprite.width, brain.sprite.height)
+
     if (brain.overlay) {
       // Draw the overlay on a canvas
       brain.planes.contextMaster.globalAlpha = brain.opacity
-      brain.planes.contextMaster.drawImage(brain.overlay.sprite,
+      brain.planes.contextMaster.drawImage(brain.overlay.sprite.bitmap,
         0, 0, brain.overlay.sprite.width, brain.overlay.sprite.height,
         0, 0, brain.sprite.width, brain.sprite.height)
     };
@@ -876,18 +878,6 @@ var brainsprite = function (params) {
     brain.init()
     brain.renderProjections()
   }, false)
-
-  // Draw all slices when background/overlay are loaded
-  brain.sprite.addEventListener('load', function () {
-    brain.init()
-    brain.renderProjections()
-  })
-  if (brain.overlay) {
-    brain.overlay.sprite.addEventListener('load', function () {
-      brain.init()
-      brain.renderProjections()
-    })
-  }
 
   // Init the viewer
   brain.init()
