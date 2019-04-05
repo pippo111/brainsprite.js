@@ -466,7 +466,7 @@ var brainsprite = function (params) {
 
         // Add X coordinates on the slice
         if (brain.flagCoordinates) {
-          coord = 'x = ' + Math.round(brain.coordinatesSlice.X)
+          coord = 'Sagittal: ' + Math.round(brain.coordinatesSlice.X)
           coordWidth = brain.context.measureText(coord).width
           brain.context.fillStyle = brain.colorFont
           brain.context.fillText(coord, brain.widthCanvas.X / 2 - coordWidth /
@@ -531,7 +531,7 @@ var brainsprite = function (params) {
         if (brain.flagCoordinates) {
           brain.context.font = brain.sizeFontPixels + `px "${brain.fontFamily}"`
           brain.context.fillStyle = brain.colorFont
-          coord = 'y = ' + Math.round(brain.coordinatesSlice.Y)
+          coord = 'Coronal: ' + Math.round(brain.coordinatesSlice.Y)
           coordWidth = brain.context.measureText(coord).width
           brain.context.fillText(coord, brain.widthCanvas.X +
           (brain.widthCanvas.Y / 2) - coordWidth / 2,
@@ -569,7 +569,7 @@ var brainsprite = function (params) {
 
         // Add Z coordinates on the slice
         if (brain.flagCoordinates) {
-          coord = 'z = ' + Math.round(brain.coordinatesSlice.Z)
+          coord = 'Axial: ' + Math.round(brain.coordinatesSlice.Z)
           coordWidth = brain.context.measureText(coord).width
           brain.context.fillStyle = brain.colorFont
           brain.context.fillText(coord, brain.widthCanvas.X +
@@ -594,12 +594,14 @@ var brainsprite = function (params) {
     let pos = {}
     let nY = brain.nbSlice.Y
     let nZ = brain.nbSlice.Z
+    let plane
 
     brain.context.font = brain.sizeFontPixels + `px "${brain.fontFamily}"`
     brain.context.fillStyle = brain.colorBackground
 
     switch (type) {
       case 'X':
+        plane = 'Sagittal'
         // Draw a sagital slice in memory
         pos.XW = ((brain.numSlice.X) % brain.nbCol)
         pos.XH = (brain.numSlice.X - pos.XW) / brain.nbCol
@@ -619,6 +621,7 @@ var brainsprite = function (params) {
         break
 
       case 'Y':
+        plane = 'Coronal'
         // Draw a single coronal slice at native resolution
         brain.context.fillRect(0, 0, brain.widthCanvas.max, brain.canvas.height)
         for (xx = 0; xx < brain.nbSlice.X; xx++) {
@@ -638,6 +641,7 @@ var brainsprite = function (params) {
         break
 
       case 'Z':
+        plane = 'Axial'
         // Draw a single axial slice at native resolution
         brain.context.fillRect(0, 0, brain.widthCanvas.max, brain.canvas.height)
         for (xx = 0; xx < brain.nbSlice.X; xx++) {
@@ -673,7 +677,7 @@ var brainsprite = function (params) {
 
     // Add coordinates on the slice
     if (brain.flagCoordinates) {
-      coord = `${type} = ` + Math.round(brain.coordinatesSlice[type])
+      coord = `${plane}: ` + Math.round(brain.coordinatesSlice[type])
       coordWidth = brain.context.measureText(coord).width
       brain.context.fillStyle = brain.colorFont
       brain.context.fillText(coord, (brain.widthCanvas.max / 2) - coordWidth / 2,
