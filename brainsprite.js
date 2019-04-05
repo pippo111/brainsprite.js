@@ -466,7 +466,7 @@ var brainsprite = function (params) {
 
         // Add X coordinates on the slice
         if (brain.flagCoordinates) {
-          coord = 'Sagittal: ' + Math.round(brain.coordinatesSlice.X)
+          coord = `Sagittal: ${Math.round(brain.coordinatesSlice.X)}, Coord: (${brain.coordinatesSlice.Y}, ${brain.coordinatesSlice.Z})`
           coordWidth = brain.context.measureText(coord).width
           brain.context.fillStyle = brain.colorFont
           brain.context.fillText(coord, brain.widthCanvas.X / 2 - coordWidth /
@@ -531,7 +531,7 @@ var brainsprite = function (params) {
         if (brain.flagCoordinates) {
           brain.context.font = brain.sizeFontPixels + `px "${brain.fontFamily}"`
           brain.context.fillStyle = brain.colorFont
-          coord = 'Coronal: ' + Math.round(brain.coordinatesSlice.Y)
+          coord = `Coronal: ${Math.round(brain.coordinatesSlice.Y)}, Coord: (${brain.coordinatesSlice.X}, ${brain.coordinatesSlice.Z})`
           coordWidth = brain.context.measureText(coord).width
           brain.context.fillText(coord, brain.widthCanvas.X +
           (brain.widthCanvas.Y / 2) - coordWidth / 2,
@@ -569,7 +569,7 @@ var brainsprite = function (params) {
 
         // Add Z coordinates on the slice
         if (brain.flagCoordinates) {
-          coord = 'Axial: ' + Math.round(brain.coordinatesSlice.Z)
+          coord = `Axial: ${Math.round(brain.coordinatesSlice.Z)}, Coord: (${brain.coordinatesSlice.X}, ${brain.coordinatesSlice.Y})`
           coordWidth = brain.context.measureText(coord).width
           brain.context.fillStyle = brain.colorFont
           brain.context.fillText(coord, brain.widthCanvas.X +
